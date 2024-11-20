@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Download } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
@@ -23,6 +24,7 @@ export default function MermaidEditor() {
   const [separatorPosition, setSeparatorPosition] = useState(50);
   const [diagramName, setDiagramName] = useState('');
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const svgRef = useRef<SVGSVGElement | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -140,6 +142,28 @@ export default function MermaidEditor() {
     }
   }, []);
 
+  const exportAsPNG = useCallback(() => {
+    if (svgRef.current) {
+      const svgData = new XMLSerializer().serializeToString(svgRef.current);
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = () => {
+        const scaleFactor = 5;
+        canvas.width = img.width * scaleFactor;
+        canvas.height = img.height * scaleFactor;
+
+        ctx?.drawImage(img, 0, 0);
+        const pngFile = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.download = `${diagramName || 'mermaid-diagram'}.png`;
+        downloadLink.href = pngFile;
+        downloadLink.click();
+      };
+      img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+    }
+  }, [diagramName]);
+
   return (
     <div className="flex flex-col h-screen overflow-hidden">
       <div className="flex-none p-4 bg-gray-100">
@@ -157,10 +181,13 @@ export default function MermaidEditor() {
           <Button onClick={() => router.push('/manage-diagrams')}>
             Manage Diagrams
           </Button>
+          <Button onClick={error ? undefined : exportAsPNG} disabled={!!error}>
+            <Download className="w-4 h-4 mr-2" />
+            Export as PNG
+          </Button>
         </div>
       </div>
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Editor Section */}
         <div
           className="flex-none overflow-hidden"
           style={{ width: `${separatorPosition}%` }}
@@ -206,7 +233,15 @@ export default function MermaidEditor() {
           {error ? (
             <div className="text-red-500 p-4">{error}</div>
           ) : (
-            <div className="p-4" dangerouslySetInnerHTML={{ __html: svg }} />
+            <div
+              className="p-4"
+              dangerouslySetInnerHTML={{ __html: svg }}
+              ref={(ref) => {
+                if (ref) {
+                  svgRef.current = ref.querySelector('svg');
+                }
+              }}
+            />
           )}
         </div>
       </div>
