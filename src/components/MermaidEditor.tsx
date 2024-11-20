@@ -149,7 +149,7 @@ export default function MermaidEditor() {
       const ctx = canvas.getContext('2d');
       const img = new Image();
       img.onload = () => {
-        const scaleFactor = 5;
+        const scaleFactor = 10;
         canvas.width = img.width * scaleFactor;
         canvas.height = img.height * scaleFactor;
 

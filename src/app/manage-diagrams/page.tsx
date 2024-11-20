@@ -22,9 +22,12 @@ export default function ManageDiagrams() {
 
   useEffect(() => {
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
-    if (savedDiagrams) {
-      setDiagrams(JSON.parse(savedDiagrams));
-    }
+    savedDiagrams &&
+      setDiagrams(
+        JSON.parse(savedDiagrams)
+          .sort((a: any, b: any) => a.name.localeCompare(b.name))
+          .reverse()
+      );
   }, []);
 
   const deleteDiagram = (name: string) => {
