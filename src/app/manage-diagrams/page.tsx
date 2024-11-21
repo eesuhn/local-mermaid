@@ -13,11 +13,17 @@ import {
 import { useRouter } from 'next/navigation';
 import { Diagram } from '@/types/diagram';
 import { formatDate } from '@/lib/utils';
+import { ConfirmationDialog } from '@/components/ConfirmationDialog';
+import { Notification } from '@/components/Notification';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
 export default function ManageDiagrams() {
   const [diagrams, setDiagrams] = useState<Diagram[]>([]);
+  const [alert, setAlert] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -37,6 +43,11 @@ export default function ManageDiagrams() {
     const updatedDiagrams = diagrams.filter((diagram) => diagram.name !== name);
     setDiagrams(updatedDiagrams);
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedDiagrams));
+    setAlert({
+      title: 'Success',
+      description: `Diagram "${name}" has been deleted.`,
+    });
+    setTimeout(() => setAlert(null), 3000);
   };
 
   const loadDiagram = (name: string) => {
@@ -68,12 +79,12 @@ export default function ManageDiagrams() {
                 >
                   Load
                 </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => deleteDiagram(diagram.name)}
-                >
-                  Delete
-                </Button>
+                <ConfirmationDialog
+                  trigger={<Button variant="destructive">Delete</Button>}
+                  title="Are you absolutely sure?"
+                  description={`This action cannot be undone. This will permanently delete the diagram "${diagram.name}".`}
+                  onConfirm={() => deleteDiagram(diagram.name)}
+                />
               </TableCell>
             </TableRow>
           ))}
@@ -82,6 +93,9 @@ export default function ManageDiagrams() {
       <Button onClick={() => router.push('/')} className="mt-4">
         Back to Editor
       </Button>
+      {alert && (
+        <Notification title={alert.title} description={alert.description} />
+      )}
     </div>
   );
 }

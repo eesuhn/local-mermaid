@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Download } from 'lucide-react';
 import { Diagram } from '@/types/diagram';
+import { Notification } from '@/components/Notification';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
@@ -28,6 +29,10 @@ export default function MermaidEditor() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [alert, setAlert] = useState<{
+    title: string;
+    description: string;
+  } | null>(null);
 
   // Initialize Mermaid once
   useEffect(() => {
@@ -89,7 +94,11 @@ export default function MermaidEditor() {
 
   const saveDiagram = useCallback(() => {
     if (!diagramName) {
-      alert('Please enter a name for your diagram');
+      setAlert({
+        title: 'Error',
+        description: 'Please enter a name for your diagram',
+      });
+      setTimeout(() => setAlert(null), 3000);
       return;
     }
 
@@ -117,7 +126,8 @@ export default function MermaidEditor() {
     }
 
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(diagrams));
-    alert('Diagram saved successfully!');
+    setAlert({ title: 'Success', description: 'Diagram saved successfully!' });
+    setTimeout(() => setAlert(null), 3000);
   }, [diagramName, input]);
 
   const loadDiagram = useCallback((name: string) => {
@@ -129,7 +139,11 @@ export default function MermaidEditor() {
         setInput(diagram.content);
         setDiagramName(diagram.name);
       } else {
-        alert('No diagram found with that name');
+        setAlert({
+          title: 'Error',
+          description: 'No diagram found with that name',
+        });
+        setTimeout(() => setAlert(null), 3000);
       }
     }
   }, []);
@@ -240,7 +254,7 @@ export default function MermaidEditor() {
           style={{ width: `${100 - separatorPosition}%` }}
         >
           {error ? (
-            <div className="p-4 text-red-500">{error}</div>
+            <div className="p-4 text-destructive">{error}</div>
           ) : (
             <div
               className="p-4"
@@ -254,6 +268,9 @@ export default function MermaidEditor() {
           )}
         </div>
       </div>
+      {alert && (
+        <Notification title={alert.title} description={alert.description} />
+      )}
     </div>
   );
 }
