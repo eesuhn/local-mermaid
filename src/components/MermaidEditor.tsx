@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Download } from 'lucide-react';
-import { Diagram } from '@/types/diagram';
-import { Notification } from '@/components/Notification';
+import { DiagramProps } from '@/types/diagram';
+import { Notification, NotificationProps } from '@/components/Notification';
+import { NotificationVariantProps } from '@/types/notification';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
@@ -29,10 +30,9 @@ export default function MermaidEditor() {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [alert, setAlert] = useState<{
-    title: string;
-    description: string;
-  } | null>(null);
+  const [alert, setAlert] = useState<NotificationProps | null>(null);
+  const [variant, setVariant] =
+    useState<NotificationVariantProps['variant']>('default');
 
   // Initialize Mermaid once
   useEffect(() => {
@@ -98,12 +98,15 @@ export default function MermaidEditor() {
         title: 'Error',
         description: 'Please enter a name for your diagram',
       });
+      setVariant('destructive');
       setTimeout(() => setAlert(null), 3000);
       return;
     }
 
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
-    const diagrams: Diagram[] = savedDiagrams ? JSON.parse(savedDiagrams) : [];
+    const diagrams: DiagramProps[] = savedDiagrams
+      ? JSON.parse(savedDiagrams)
+      : [];
 
     const currentTimestamp = new Date().toISOString();
 
@@ -126,7 +129,11 @@ export default function MermaidEditor() {
     }
 
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(diagrams));
-    setAlert({ title: 'Success', description: 'Diagram saved successfully!' });
+    setAlert({
+      title: 'Success',
+      description: 'Diagram saved successfully!',
+    });
+    setVariant('success');
     setTimeout(() => setAlert(null), 3000);
   }, [diagramName, input]);
 
@@ -143,6 +150,7 @@ export default function MermaidEditor() {
           title: 'Error',
           description: 'No diagram found with that name',
         });
+        setVariant('destructive');
         setTimeout(() => setAlert(null), 3000);
       }
     }
@@ -269,7 +277,11 @@ export default function MermaidEditor() {
         </div>
       </div>
       {alert && (
-        <Notification title={alert.title} description={alert.description} />
+        <Notification
+          variant={variant}
+          title={alert.title}
+          description={alert.description}
+        />
       )}
     </div>
   );

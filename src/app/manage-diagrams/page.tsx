@@ -11,27 +11,28 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
-import { Diagram } from '@/types/diagram';
+import { DiagramProps } from '@/types/diagram';
 import { formatDate } from '@/lib/utils';
 import { ConfirmationDialog } from '@/components/ConfirmationDialog';
 import { Notification } from '@/components/Notification';
+import { NotificationProps } from '@/components/Notification';
+import { NotificationVariantProps } from '@/types/notification';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
 export default function ManageDiagrams() {
-  const [diagrams, setDiagrams] = useState<Diagram[]>([]);
-  const [alert, setAlert] = useState<{
-    title: string;
-    description: string;
-  } | null>(null);
+  const [diagrams, setDiagrams] = useState<DiagramProps[]>([]);
+  const [alert, setAlert] = useState<NotificationProps | null>(null);
   const router = useRouter();
+  const [variant, setVariant] =
+    useState<NotificationVariantProps['variant']>('default');
 
   useEffect(() => {
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedDiagrams) {
       setDiagrams(
         JSON.parse(savedDiagrams).sort(
-          (a: Diagram, b: Diagram) =>
+          (a: DiagramProps, b: DiagramProps) =>
             new Date(b.lastUpdated || 0).getTime() -
             new Date(a.lastUpdated || 0).getTime()
         )
@@ -47,6 +48,7 @@ export default function ManageDiagrams() {
       title: 'Success',
       description: `Diagram "${name}" has been deleted.`,
     });
+    setVariant('success');
     setTimeout(() => setAlert(null), 3000);
   };
 
@@ -94,7 +96,11 @@ export default function ManageDiagrams() {
         Back to Editor
       </Button>
       {alert && (
-        <Notification title={alert.title} description={alert.description} />
+        <Notification
+          variant={variant}
+          title={alert.title}
+          description={alert.description}
+        />
       )}
     </div>
   );
