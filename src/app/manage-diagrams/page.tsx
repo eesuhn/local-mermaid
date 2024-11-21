@@ -14,6 +14,10 @@ import { useRouter } from 'next/navigation';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
+interface Diagram {
+  name: string;
+}
+
 export default function ManageDiagrams() {
   const [diagrams, setDiagrams] = useState<
     Array<{ name: string; content: string }>
@@ -22,12 +26,13 @@ export default function ManageDiagrams() {
 
   useEffect(() => {
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
-    savedDiagrams &&
+    if (savedDiagrams) {
       setDiagrams(
         JSON.parse(savedDiagrams)
-          .sort((a: any, b: any) => a.name.localeCompare(b.name))
+          .sort((a: Diagram, b: Diagram) => a.name.localeCompare(b.name))
           .reverse()
       );
+    }
   }, []);
 
   const deleteDiagram = (name: string) => {

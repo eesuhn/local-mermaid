@@ -33,23 +33,6 @@ export default function MermaidEditor() {
     mermaid.initialize({ startOnLoad: false });
   }, []);
 
-  // Load saved diagrams on component mount or when URL changes
-  useEffect(() => {
-    const diagramToLoad = searchParams.get('diagram');
-    if (diagramToLoad) {
-      loadDiagram(diagramToLoad);
-    } else {
-      const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
-      if (savedDiagrams) {
-        const parsedDiagrams = JSON.parse(savedDiagrams);
-        if (parsedDiagrams.length > 0) {
-          setInput(parsedDiagrams[0].content);
-          setDiagramName(parsedDiagrams[0].name);
-        }
-      }
-    }
-  }, [searchParams]);
-
   // Debounced diagram rendering
   const renderDiagram = useCallback(async (diagram: string) => {
     try {
@@ -110,7 +93,7 @@ export default function MermaidEditor() {
     }
 
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
-    let diagrams = savedDiagrams ? JSON.parse(savedDiagrams) : [];
+    const diagrams = savedDiagrams ? JSON.parse(savedDiagrams) : [];
 
     // Check if a diagram with this name already exists
     const existingIndex = diagrams.findIndex(
@@ -141,6 +124,23 @@ export default function MermaidEditor() {
       }
     }
   }, []);
+
+  // Load saved diagrams on component mount or when URL changes
+  useEffect(() => {
+    const diagramToLoad = searchParams.get('diagram');
+    if (diagramToLoad) {
+      loadDiagram(diagramToLoad);
+    } else {
+      const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
+      if (savedDiagrams) {
+        const parsedDiagrams = JSON.parse(savedDiagrams);
+        if (parsedDiagrams.length > 0) {
+          setInput(parsedDiagrams[0].content);
+          setDiagramName(parsedDiagrams[0].name);
+        }
+      }
+    }
+  }, [searchParams, loadDiagram]);
 
   const exportAsPNG = useCallback(() => {
     if (svgRef.current) {

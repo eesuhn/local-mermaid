@@ -9,7 +9,4 @@ Edit, preview, and export `Mermaid.js` diagrams locally ⚡
 
 1. `bun install` to install all necessary dependencies.
 
-2. Start the development server for `Next.js`:
-    ```bash
-    bun run dev
-    ```
+2. `bun run dev` to start the development server.
