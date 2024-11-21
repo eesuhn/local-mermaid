@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
 import { Diagram } from '@/types/diagram';
+import { formatDate } from '@/lib/utils';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
@@ -58,9 +59,7 @@ export default function ManageDiagrams() {
             <TableRow key={diagram.name}>
               <TableCell>{diagram.name}</TableCell>
               <TableCell>
-                {diagram.lastUpdated
-                  ? new Date(diagram.lastUpdated).toLocaleString()
-                  : 'N/A'}
+                {diagram.lastUpdated ? formatDate(diagram.lastUpdated) : 'N/A'}
               </TableCell>
               <TableCell>
                 <Button
