@@ -1,8 +1,10 @@
 ## Local Mermaid <img src="./src/app/favicon.ico" alt="logo" width="20" />
 
+[⭐ LIVE DEMO ⭐](https://eesuhn.github.io/local-mermaid/)
+
 Edit, preview, and export `Mermaid.js` diagrams locally ⚡
 
-### Getting Started 🚀
+### Setting up locally 🚀
 
 > [!IMPORTANT]
 > Install `Bun` before proceeding. <br> `curl -fsSL https://bun.sh/install | bash`
