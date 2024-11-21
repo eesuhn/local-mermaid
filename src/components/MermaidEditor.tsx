@@ -8,10 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Download } from 'lucide-react';
+import { Download, MoreHorizontal } from 'lucide-react';
 import { DiagramProps } from '@/types/diagram';
 import { Notification, NotificationProps } from '@/components/Notification';
 import { NotificationVariantProps } from '@/types/notification';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
@@ -33,10 +39,19 @@ export default function MermaidEditor() {
   const [alert, setAlert] = useState<NotificationProps | null>(null);
   const [variant, setVariant] =
     useState<NotificationVariantProps['variant']>('default');
+  const [isMobile, setIsMobile] = useState(false);
 
   // Initialize Mermaid once
   useEffect(() => {
     mermaid.initialize({ startOnLoad: false });
+  }, []);
+
+  // Check for mobile view
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Debounced diagram rendering
@@ -198,68 +213,64 @@ export default function MermaidEditor() {
   return (
     <div className="flex h-screen flex-col overflow-hidden">
       <div className="flex-none bg-gray-100 p-4">
-        <div className="flex items-center space-x-4">
-          <Label htmlFor="diagram-name">Diagram Name:</Label>
+        <div className="flex flex-wrap items-center gap-4">
+          <Label htmlFor="diagram-name" className="sr-only md:not-sr-only">
+            Diagram Name:
+          </Label>
           <Input
             id="diagram-name"
             type="text"
             value={diagramName}
             onChange={(e) => setDiagramName(e.target.value)}
             placeholder="Enter diagram name"
-            className="w-64"
+            className="w-full md:w-64"
           />
-          <Button onClick={saveDiagram}>Save</Button>
-          <Button onClick={() => router.push('/manage-diagrams')}>
+          <Button onClick={saveDiagram} className="hidden md:inline-flex">
+            Save
+          </Button>
+          <Button
+            onClick={() => router.push('/manage-diagrams')}
+            className="hidden md:inline-flex"
+          >
             Manage Diagrams
           </Button>
-          <Button onClick={error ? undefined : exportAsPNG} disabled={!!error}>
+          <Button
+            onClick={error ? undefined : exportAsPNG}
+            disabled={!!error}
+            className="hidden md:inline-flex"
+          >
             <Download className="mr-2 h-4 w-4" />
             Export as PNG
           </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon" className="md:hidden">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">More options</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={saveDiagram}>Save</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/manage-diagrams')}>
+                Manage Diagrams
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={error ? undefined : exportAsPNG}
+                disabled={!!error}
+              >
+                Export as PNG
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
-      <div className="relative flex flex-1 overflow-hidden">
-        <div
-          className="flex-none overflow-hidden"
-          style={{ width: `${separatorPosition}%` }}
-        >
-          <Editor
-            height="100%"
-            defaultLanguage="markdown"
-            value={input}
-            onChange={handleEditorChange}
-            onMount={handleEditorDidMount}
-            options={{
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-              fontSize: 14,
-              wordWrap: 'on',
-            }}
-          />
-        </div>
-
-        {/* Resizable Separator */}
-        <div
-          className="cursor-col-resize bg-gray-500 hover:bg-gray-600 active:bg-gray-700"
-          style={{
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: `${separatorPosition}%`,
-            width: '4px',
-            zIndex: 10,
-          }}
-          onMouseDown={handleMouseDown}
-          role="separator"
-          aria-orientation="vertical"
-          aria-valuenow={separatorPosition}
-          tabIndex={0}
-        />
-
+      <div
+        className={`relative flex flex-1 overflow-hidden ${isMobile ? 'flex-col' : 'flex-row'}`}
+      >
         {/* Mermaid Preview Section */}
         <div
-          className="flex-none overflow-auto"
-          style={{ width: `${100 - separatorPosition}%` }}
+          className={`flex-none overflow-auto ${isMobile ? 'h-1/2' : ''}`}
+          style={isMobile ? {} : { width: `${100 - separatorPosition}%` }}
         >
           {error ? (
             <div className="p-4 text-destructive">{error}</div>
@@ -274,6 +285,46 @@ export default function MermaidEditor() {
               }}
             />
           )}
+        </div>
+
+        {/* Resizable Separator */}
+        {!isMobile && (
+          <div
+            className="cursor-col-resize bg-gray-500 hover:bg-gray-600 active:bg-gray-700"
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: `${separatorPosition}%`,
+              width: '4px',
+              zIndex: 10,
+            }}
+            onMouseDown={handleMouseDown}
+            role="separator"
+            aria-orientation="vertical"
+            aria-valuenow={separatorPosition}
+            tabIndex={0}
+          />
+        )}
+
+        {/* Editor Section */}
+        <div
+          className={`flex-none overflow-hidden ${isMobile ? 'h-1/2' : ''}`}
+          style={isMobile ? {} : { width: `${separatorPosition}%` }}
+        >
+          <Editor
+            height="100%"
+            defaultLanguage="markdown"
+            value={input}
+            onChange={handleEditorChange}
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              fontSize: 14,
+              wordWrap: 'on',
+            }}
+          />
         </div>
       </div>
       {alert && (
