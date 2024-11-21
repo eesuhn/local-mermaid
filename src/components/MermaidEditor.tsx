@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Download } from 'lucide-react';
+import { Diagram } from '@/types/diagram';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
@@ -93,18 +94,26 @@ export default function MermaidEditor() {
     }
 
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
-    const diagrams = savedDiagrams ? JSON.parse(savedDiagrams) : [];
+    const diagrams: Diagram[] = savedDiagrams ? JSON.parse(savedDiagrams) : [];
+
+    const currentTimestamp = new Date().toISOString();
 
     // Check if a diagram with this name already exists
-    const existingIndex = diagrams.findIndex(
-      (d: { name: string }) => d.name === diagramName
-    );
+    const existingIndex = diagrams.findIndex((d) => d.name === diagramName);
     if (existingIndex !== -1) {
       // Update existing diagram
-      diagrams[existingIndex] = { name: diagramName, content: input };
+      diagrams[existingIndex] = {
+        ...diagrams[existingIndex],
+        content: input,
+        lastUpdated: currentTimestamp,
+      };
     } else {
       // Add new diagram
-      diagrams.push({ name: diagramName, content: input });
+      diagrams.push({
+        name: diagramName,
+        content: input,
+        lastUpdated: currentTimestamp,
+      });
     }
 
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(diagrams));
@@ -165,8 +174,8 @@ export default function MermaidEditor() {
   }, [diagramName]);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
-      <div className="flex-none p-4 bg-gray-100">
+    <div className="flex h-screen flex-col overflow-hidden">
+      <div className="flex-none bg-gray-100 p-4">
         <div className="flex items-center space-x-4">
           <Label htmlFor="diagram-name">Diagram Name:</Label>
           <Input
@@ -182,12 +191,12 @@ export default function MermaidEditor() {
             Manage Diagrams
           </Button>
           <Button onClick={error ? undefined : exportAsPNG} disabled={!!error}>
-            <Download className="w-4 h-4 mr-2" />
+            <Download className="mr-2 h-4 w-4" />
             Export as PNG
           </Button>
         </div>
       </div>
-      <div className="flex flex-1 overflow-hidden relative">
+      <div className="relative flex flex-1 overflow-hidden">
         <div
           className="flex-none overflow-hidden"
           style={{ width: `${separatorPosition}%` }}
@@ -209,7 +218,7 @@ export default function MermaidEditor() {
 
         {/* Resizable Separator */}
         <div
-          className="bg-gray-500 cursor-col-resize hover:bg-gray-600 active:bg-gray-700"
+          className="cursor-col-resize bg-gray-500 hover:bg-gray-600 active:bg-gray-700"
           style={{
             position: 'absolute',
             top: 0,
@@ -231,7 +240,7 @@ export default function MermaidEditor() {
           style={{ width: `${100 - separatorPosition}%` }}
         >
           {error ? (
-            <div className="text-red-500 p-4">{error}</div>
+            <div className="p-4 text-red-500">{error}</div>
           ) : (
             <div
               className="p-4"

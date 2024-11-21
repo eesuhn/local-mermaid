@@ -11,26 +11,23 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useRouter } from 'next/navigation';
+import { Diagram } from '@/types/diagram';
 
 const LOCAL_STORAGE_KEY = 'mermaid-diagrams';
 
-interface Diagram {
-  name: string;
-}
-
 export default function ManageDiagrams() {
-  const [diagrams, setDiagrams] = useState<
-    Array<{ name: string; content: string }>
-  >([]);
+  const [diagrams, setDiagrams] = useState<Diagram[]>([]);
   const router = useRouter();
 
   useEffect(() => {
     const savedDiagrams = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (savedDiagrams) {
       setDiagrams(
-        JSON.parse(savedDiagrams)
-          .sort((a: Diagram, b: Diagram) => a.name.localeCompare(b.name))
-          .reverse()
+        JSON.parse(savedDiagrams).sort(
+          (a: Diagram, b: Diagram) =>
+            new Date(b.lastUpdated || 0).getTime() -
+            new Date(a.lastUpdated || 0).getTime()
+        )
       );
     }
   }, []);
@@ -47,11 +44,12 @@ export default function ManageDiagrams() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Manage Saved Diagrams</h1>
+      <h1 className="mb-4 text-2xl font-bold">Manage Saved Diagrams</h1>
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Diagram Name</TableHead>
+            <TableHead>Last Updated</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -59,6 +57,11 @@ export default function ManageDiagrams() {
           {diagrams.map((diagram) => (
             <TableRow key={diagram.name}>
               <TableCell>{diagram.name}</TableCell>
+              <TableCell>
+                {diagram.lastUpdated
+                  ? new Date(diagram.lastUpdated).toLocaleString()
+                  : 'N/A'}
+              </TableCell>
               <TableCell>
                 <Button
                   onClick={() => loadDiagram(diagram.name)}
