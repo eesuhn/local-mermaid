@@ -91,8 +91,8 @@ export default function MermaidEditor() {
 
     const handleMouseMove = (e: MouseEvent) => {
       const newPosition = Math.max(
-        10,
-        Math.min(90, (e.clientX / window.innerWidth) * 100)
+        20,
+        Math.min(80, (e.clientX / window.innerWidth) * 100)
       );
       setSeparatorPosition(newPosition);
       editorRef.current?.layout(); // Re-layout the editor after dragging
@@ -267,24 +267,24 @@ export default function MermaidEditor() {
       <div
         className={`relative flex flex-1 overflow-hidden ${isMobile ? 'flex-col' : 'flex-row'}`}
       >
-        {/* Mermaid Preview Section */}
+        {/* Editor Section */}
         <div
-          className={`flex-none overflow-auto ${isMobile ? 'h-1/2' : ''}`}
-          style={isMobile ? {} : { width: `${100 - separatorPosition}%` }}
+          className={`flex-none overflow-hidden ${isMobile ? 'h-1/2' : ''}`}
+          style={isMobile ? {} : { width: `${separatorPosition}%` }}
         >
-          {error ? (
-            <div className="p-4 text-destructive">{error}</div>
-          ) : (
-            <div
-              className="p-4"
-              dangerouslySetInnerHTML={{ __html: svg }}
-              ref={(ref) => {
-                if (ref) {
-                  svgRef.current = ref.querySelector('svg');
-                }
-              }}
-            />
-          )}
+          <Editor
+            height="100%"
+            defaultLanguage="markdown"
+            value={input}
+            onChange={handleEditorChange}
+            onMount={handleEditorDidMount}
+            options={{
+              minimap: { enabled: false },
+              scrollBeyondLastLine: false,
+              fontSize: 14,
+              wordWrap: 'on',
+            }}
+          />
         </div>
 
         {/* Resizable Separator */}
@@ -307,24 +307,24 @@ export default function MermaidEditor() {
           />
         )}
 
-        {/* Editor Section */}
+        {/* Mermaid Preview Section */}
         <div
-          className={`flex-none overflow-hidden ${isMobile ? 'h-1/2' : ''}`}
-          style={isMobile ? {} : { width: `${separatorPosition}%` }}
+          className={`flex-none overflow-auto ${isMobile ? 'h-1/2' : ''}`}
+          style={isMobile ? {} : { width: `${100 - separatorPosition}%` }}
         >
-          <Editor
-            height="100%"
-            defaultLanguage="markdown"
-            value={input}
-            onChange={handleEditorChange}
-            onMount={handleEditorDidMount}
-            options={{
-              minimap: { enabled: false },
-              scrollBeyondLastLine: false,
-              fontSize: 14,
-              wordWrap: 'on',
-            }}
-          />
+          {error ? (
+            <div className="p-4 text-destructive">{error}</div>
+          ) : (
+            <div
+              className="p-4"
+              dangerouslySetInnerHTML={{ __html: svg }}
+              ref={(ref) => {
+                if (ref) {
+                  svgRef.current = ref.querySelector('svg');
+                }
+              }}
+            />
+          )}
         </div>
       </div>
       {alert && (
