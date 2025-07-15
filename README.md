@@ -1,6 +1,6 @@
-## Local Mermaid <img src="./src/app/favicon.ico" alt="logo" width="20" />
+## Local Mermaid &nbsp;<img src="./src/app/favicon.ico" alt="logo" width="20" />
 
-[⭐ LIVE DEMO ⭐](https://eesuhn.github.io/local-mermaid/)
+[Visit the Website](https://eesuhn.github.io/local-mermaid/)
 
 Edit, preview, and export `Mermaid.js` diagrams locally ⚡
 
