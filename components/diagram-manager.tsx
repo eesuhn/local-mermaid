@@ -86,7 +86,7 @@ export default function DiagramManager() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="border-b bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-6">
+        <div className="mx-auto max-w-6xl px-2 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
@@ -98,13 +98,13 @@ export default function DiagramManager() {
                 <ArrowLeft className="h-4 w-4" />
                 Back to Editor
               </Button>
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold text-gray-900">
                   Manage Diagrams
                 </h1>
-              </div>
+              </div> */}
             </div>
-            <Badge variant="secondary" className="text-sm">
+            <Badge variant="secondary" className="px-3 py-1 text-sm">
               {diagrams.length} diagram{diagrams.length !== 1 ? 's' : ''}
             </Badge>
           </div>
@@ -130,16 +130,14 @@ export default function DiagramManager() {
         {/* Diagrams Grid */}
         {filteredDiagrams.length === 0 ? (
           <div className="py-12 text-center">
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200">
+            {/* <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-200">
               <span className="text-2xl text-gray-400">📊</span>
-            </div>
+            </div> */}
             <h3 className="mb-2 text-lg font-medium text-gray-900">
               {searchTerm ? 'No diagrams found' : 'No diagrams yet'}
             </h3>
             <p className="mb-6 text-gray-500">
-              {searchTerm
-                ? 'Try adjusting your search terms'
-                : 'Create your first diagram to get started'}
+              {searchTerm ? 'Try adjusting your search terms' : ''}
             </p>
             {!searchTerm && (
               <Button onClick={() => router.push('/')}>
@@ -154,23 +152,28 @@ export default function DiagramManager() {
                 key={diagram.name}
                 className="transition-shadow hover:shadow-md"
               >
-                <CardHeader className="pb-3">
+                <CardHeader className="">
                   <div className="flex items-start justify-between">
                     <div className="min-w-0 flex-1">
-                      <CardTitle className="truncate text-lg">
-                        {diagram.name}
+                      <CardTitle
+                        className="truncate text-lg"
+                        title={diagram.name}
+                      >
+                        {diagram.name.length > 26
+                          ? diagram.name.slice(0, 23) + '...'
+                          : diagram.name}
                       </CardTitle>
-                      <CardDescription className="mt-1 flex items-center gap-2">
-                        <Calendar className="h-3 w-3" />
+                      <CardDescription className="mt-1 flex items-center gap-2 text-xs">
+                        <Calendar className="mr-[-1px] ml-1 h-3 w-3" />
                         {formatDate(diagram.lastUpdated)}
                       </CardDescription>
                     </div>
-                    <Badge variant="outline" className="ml-2 text-xs">
+                    <Badge variant="outline" className="mt-1 ml-2 text-xs">
                       {getDiagramType(diagram.content)}
                     </Badge>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-0">
+                <CardContent className="mt-[-10px]">
                   <div className="mb-4 rounded-md bg-gray-50 p-3">
                     <code className="line-clamp-3 text-xs text-gray-600">
                       {diagram.content.split('\n').slice(0, 3).join('\n')}
@@ -183,7 +186,7 @@ export default function DiagramManager() {
                       onClick={() => openDiagram(diagram.name)}
                       className="flex-1"
                     >
-                      <Edit className="mr-2 h-4 w-4" />
+                      <Edit className="mr-1 h-4 w-4" />
                       Edit
                     </Button>
                     <AlertDialog>
@@ -195,7 +198,7 @@ export default function DiagramManager() {
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>Delete Diagram</AlertDialogTitle>
-                          <AlertDialogDescription>
+                          <AlertDialogDescription className="ml-1">
                             Are you sure you want to delete &quot;{diagram.name}
                             &quot;? This action cannot be undone.
                           </AlertDialogDescription>
@@ -204,7 +207,7 @@ export default function DiagramManager() {
                           <AlertDialogCancel>Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => handleDeleteDiagram(diagram.name)}
-                            className="bg-red-600 hover:bg-red-700"
+                            className="mr-1 ml-1 bg-red-600 hover:bg-red-700"
                           >
                             Delete
                           </AlertDialogAction>

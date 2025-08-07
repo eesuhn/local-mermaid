@@ -9,7 +9,6 @@ import { Download, MoreHorizontal, Save, FolderOpen } from 'lucide-react';
 // Components
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Notification } from '@/components/notification';
 import {
   DropdownMenu,
@@ -219,12 +218,12 @@ export default function MermaidEditor() {
           <div className="flex items-center gap-2">{/* Title removed */}</div>
 
           <div className="flex flex-1 items-center gap-4">
-            <Label
+            {/* <Label
               htmlFor="diagram-name"
               className="sr-only text-sm font-medium md:not-sr-only"
             >
               Name:
-            </Label>
+            </Label> */}
             <Input
               id="diagram-name"
               type="text"
@@ -233,34 +232,50 @@ export default function MermaidEditor() {
               placeholder="Enter diagram name"
               className="w-full md:w-64"
             />
-          </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden items-center gap-2 md:flex">
             <div className="flex items-center gap-1 rounded-md border p-1">
               <Button
                 onClick={handleFontSizeDecrease}
                 variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0"
+                size="lg"
+                className="h-7 w-7 p-0 text-xl"
               >
-                A-
+                <span className="leading-none">−</span>
               </Button>
-              <span className="px-2 text-xs text-gray-500">{fontSize}px</span>
+              <span className="px-2 pt-[1px] text-xs text-gray-600">
+                {fontSize}px
+              </span>
               <Button
                 onClick={handleFontSizeIncrease}
                 variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0"
+                size="lg"
+                className="h-7 w-7 p-0 text-xl"
               >
-                A+
+                <span className="leading-none">+</span>
               </Button>
             </div>
+          </div>
+
+          {/* Desktop Actions */}
+          <div className="hidden items-center gap-4 md:flex">
             <Button onClick={handleNewDiagram} variant="outline" size="sm">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="mr-1 h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
               New
             </Button>
             <Button onClick={handleSaveDiagram} size="sm">
-              <Save className="mr-2 h-4 w-4" />
+              <Save className="mr-1 h-4 w-4" />
               Save
             </Button>
             <Button
@@ -268,13 +283,13 @@ export default function MermaidEditor() {
               variant="outline"
               size="sm"
             >
-              <FolderOpen className="mr-2 h-4 w-4" />
+              <FolderOpen className="mr-1 h-4 w-4" />
               Manage
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" disabled={!!error}>
-                  <Download className="mr-2 h-4 w-4" />
+                  <Download className="mr-1 h-4 w-4" />
                   Export
                 </Button>
               </DropdownMenuTrigger>
@@ -382,23 +397,23 @@ export default function MermaidEditor() {
             <Button
               onClick={zoomIn}
               variant="outline"
-              size="sm"
+              size="lg"
               className="h-8 w-8 p-0"
               disabled={zoomLevel >= UI_CONSTANTS.MAX_ZOOM}
             >
-              +
+              <span className="leading-none">+</span>
             </Button>
-            <div className="px-1 text-center text-xs text-gray-500">
+            <div className="px-1 py-1 text-center text-xs text-gray-500">
               {Math.round(zoomLevel * 100)}%
             </div>
             <Button
               onClick={zoomOut}
               variant="outline"
-              size="sm"
+              size="lg"
               className="h-8 w-8 p-0"
               disabled={zoomLevel <= UI_CONSTANTS.MIN_ZOOM}
             >
-              -
+              <span className="leading-none">−</span>
             </Button>
             <Button
               onClick={resetZoom}
@@ -406,7 +421,29 @@ export default function MermaidEditor() {
               size="sm"
               className="h-8 w-8 p-0 text-xs"
             >
-              ⌂
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="mx-auto h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 12a9 9 0 1 1 9 9"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <polyline
+                  points="3 7 3 12 8 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </Button>
           </div>
 
