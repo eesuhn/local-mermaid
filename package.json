@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format": "prettier --config .config/.prettierrc --ignore-path .config/.prettierignore --write .",
+    "format:check": "prettier --config .config/.prettierrc --ignore-path .config/.prettierignore --check .",
+    "prepare": "husky"
   },
   "dependencies": {
     "@monaco-editor/react": "^4.6.0",
@@ -31,13 +32,24 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "15.0.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.4",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "15.0.3"
+    "typescript": "^5"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "prettier --config .config/.prettierrc --write",
+      "eslint --fix"
+    ],
+    "*.{json,css,md}": [
+      "prettier --config .config/.prettierrc --write"
+    ]
   }
 }
