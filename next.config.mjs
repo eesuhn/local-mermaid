@@ -1,11 +1,12 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === 'production';
 const nextConfig = {
   output: 'export',
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   distDir: 'out',
-  basePath: '/local-mermaid',
-  assetPrefix: '/local-mermaid/',
+  basePath: isProd ? '/local-mermaid' : '',
+  assetPrefix: isProd ? '/local-mermaid/' : '',
   eslint: {
     ignoreDuringBuilds: true,
   },
