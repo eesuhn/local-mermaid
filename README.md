@@ -1,4 +1,4 @@
-## Local Mermaid &nbsp;<img src="./src/app/favicon.ico" alt="logo" width="20" />
+# Local Mermaid
 
 [Visit the Website](https://eesuhn.github.io/local-mermaid/)
 
@@ -8,7 +8,7 @@ Edit, preview, and export `Mermaid.js` diagrams locally ⚡
 
 - Just prompt your LLMs with keywords like **"use Mermaid.js"** to get started
 
-### Setting it up locally
+## Setting it up locally
 
 > [!IMPORTANT]
 > Install `Bun` before proceeding: <br> `curl -fsSL https://bun.sh/install | bash`
