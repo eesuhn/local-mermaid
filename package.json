@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
-    "start": "next start",
+    "start": "bunx serve@latest out",
     "lint": "next lint",
     "format": "prettier --config .config/.prettierrc --ignore-path .config/.prettierignore --write .",
     "format:check": "prettier --config .config/.prettierrc --ignore-path .config/.prettierignore --check .",
