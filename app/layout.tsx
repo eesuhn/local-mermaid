@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   description:
     'Create, edit, and export beautiful Mermaid diagrams with real-time preview',
   keywords: ['mermaid', 'diagrams', 'flowchart', 'editor', 'visualization'],
+  icons: {
+    icon: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
