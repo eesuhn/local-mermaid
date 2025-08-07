@@ -466,15 +466,25 @@ export default function MermaidEditor() {
               onMouseLeave={handleMouseLeavePan}
             >
               <div
-                className="flex min-h-full items-center justify-center will-change-transform"
+                className="mermaid-diagram flex min-h-full items-center justify-center"
                 style={{
                   transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
                   transformOrigin: 'center center',
+                  imageRendering: 'crisp-edges',
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                  willChange: isPanning ? 'transform' : 'auto',
                 }}
                 dangerouslySetInnerHTML={{ __html: svg }}
                 ref={(ref) => {
                   if (ref) {
-                    svgRef.current = ref.querySelector('svg');
+                    const svgElement = ref.querySelector('svg');
+                    if (svgElement) {
+                      svgRef.current = svgElement;
+                      // Ensure SVG maintains sharp edges when scaled
+                      svgElement.style.shapeRendering = 'geometricPrecision';
+                      svgElement.style.textRendering = 'optimizeLegibility';
+                    }
                   }
                 }}
               />
