@@ -121,3 +121,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Improve SVG rendering quality for zoomed content */
+svg {
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Ensure crisp rendering for scaled SVG elements */
+.mermaid-diagram svg {
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+}
+
+/* Optimize font rendering in SVG */
+svg text {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}

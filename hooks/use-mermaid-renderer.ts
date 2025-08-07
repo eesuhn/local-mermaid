@@ -17,6 +17,13 @@ export function useMermaidRenderer(): UseMermaidRendererReturn {
       startOnLoad: false,
       theme: 'default',
       securityLevel: 'loose',
+      // Improve rendering quality
+      fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+      fontSize: 16,
+      // Enable better text rendering
+      themeVariables: {
+        fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
+      },
     });
   }, []);
 
@@ -32,7 +39,17 @@ export function useMermaidRenderer(): UseMermaidRendererReturn {
         'mermaid-diagram',
         content
       );
-      setSvg(renderedSvg);
+
+      // Post-process the SVG to improve quality
+      let processedSvg = renderedSvg;
+
+      // Add vector-effect attribute to maintain line quality
+      processedSvg = processedSvg.replace(
+        /<svg([^>]*)>/,
+        '<svg$1 style="shape-rendering: geometricPrecision; text-rendering: optimizeLegibility;">'
+      );
+
+      setSvg(processedSvg);
       setError('');
     } catch (err) {
       setSvg('');
