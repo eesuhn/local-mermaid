@@ -103,11 +103,11 @@ export function useMermaidRenderer(): UseMermaidRendererReturn {
       .replace(/\n{3,}/g, '\n\n'); // Remove excessive blank lines
 
     // Only log if there are issues or in development mode
-    if (issues.length > 0 || process.env.NODE_ENV === 'development') {
-      console.log('Original content:', JSON.stringify(content));
-      console.log('Processed content:', JSON.stringify(processedContent));
-      console.log('Detected issues:', issues);
-    }
+    // if (issues.length > 0 || process.env.NODE_ENV === 'development') {
+    //   console.log('Original content:', JSON.stringify(content));
+    //   console.log('Processed content:', JSON.stringify(processedContent));
+    //   console.log('Detected issues:', issues);
+    // }
 
     try {
       // Use a single state update to prevent race conditions
