@@ -47,6 +47,7 @@ export default function MermaidEditor() {
   // Refs
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const diagramNameRef = useRef<HTMLInputElement | null>(null);
 
   // Hooks
   const router = useRouter();
@@ -92,22 +93,37 @@ export default function MermaidEditor() {
 
   // Handlers
   const handleSaveDiagram = useCallback(() => {
-    const validation = validateDiagramName(diagramName);
+    let nameToUse = diagramName.trim();
+
+    // If no name provided, auto-generate one
+    if (!nameToUse) {
+      const now = new Date();
+      const timestamp = `${now.getMonth() + 1}-${now.getDate()}_${now.getHours()}-${now.getMinutes()}`;
+      nameToUse = `diagram_${timestamp}`;
+      setDiagramName(nameToUse);
+    }
+
+    const validation = validateDiagramName(nameToUse);
     if (!validation.isValid) {
       showNotification({
         variant: 'destructive',
         title: 'Error',
         description: validation.error || 'Invalid diagram name',
       });
+      // Focus the name input field to guide user
+      if (diagramNameRef.current) {
+        diagramNameRef.current.focus();
+        diagramNameRef.current.select();
+      }
       return;
     }
 
     try {
-      saveDiagram(diagramName, input);
+      saveDiagram(nameToUse, input);
       showNotification({
         variant: 'success',
         title: 'Success',
-        description: 'Diagram saved successfully!',
+        description: `Diagram saved as "${nameToUse}"!`,
       });
     } catch {
       showNotification({
@@ -117,6 +133,23 @@ export default function MermaidEditor() {
       });
     }
   }, [diagramName, input, showNotification]);
+
+  // Global keyboard shortcut for save (handles cases when editor is not focused)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Check for Cmd+S (Mac) or Ctrl+S (Windows/Linux)
+      if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+        e.preventDefault();
+        e.stopPropagation();
+        handleSaveDiagram();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true); // Use capture phase
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, [handleSaveDiagram]);
 
   const handleEditorChange = useCallback((value?: string) => {
     if (value !== undefined) {
@@ -225,11 +258,12 @@ export default function MermaidEditor() {
               Name:
             </Label> */}
             <Input
+              ref={diagramNameRef}
               id="diagram-name"
               type="text"
               value={diagramName}
               onChange={(e) => setDiagramName(e.target.value)}
-              placeholder="Enter diagram name"
+              placeholder="Enter diagram name (optional)"
               className="w-full md:w-64"
             />
             <div className="flex items-center gap-1 rounded-md border p-1">
